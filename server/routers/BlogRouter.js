@@ -3,6 +3,26 @@ const router = express.Router();
 
 const { db, genid } = require('../db/DbUtils');
 
+/**
+ * 获取博客文章
+ */
+router.get('/detail', async (req, res) => {
+    let { id } = req.query;
+    let detail_sql = " SELECT * FROM `blog` WHERE `id` = ? "
+    let { err, rows } = await db.async.all(detail_sql, [id]);
+    if (err == null) {
+        res.send({
+            code: 200,
+            msg: "获取成功",
+            rows
+        })
+    } else {
+        res.send({
+            code: 500,
+            msg: "获取失败"
+        })
+    }
+})
 
 /**
  * 查询博客
@@ -40,7 +60,7 @@ router.get('/search', async (req, res) => {
     }
 
     //查询分页内容
-    let searchSql = " SELECT * FROM `blog` " + whereSqlStr + " ORDER BY `create_time` DESC LIMIT ?,? "
+    let searchSql = " SELECT `id`,`category_id`, `create_time`, `title`, substr(`content`,0,50) AS `content` FROM `blog` " + whereSqlStr + " ORDER BY `create_time` DESC LIMIT ?,? "
 
     let searchSqlParams = params.concat([(page - 1) * pageSize, pageSize]);
 
@@ -77,7 +97,7 @@ router.get('/search', async (req, res) => {
 });
 
 /**
- * 删除接口 /blog/delete?id:xxx
+ * 删除博客 /blog/delete?id:xxx
  */
 router.delete('/_token/delete', async (req, res) => {
     let id = req.query.id;
