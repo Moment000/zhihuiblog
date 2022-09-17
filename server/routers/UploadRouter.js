@@ -23,7 +23,7 @@ router.post('/rich_editor_upload', async (req, res) => {
         //修改名字加移动文件
         fs.renameSync(
             process.cwd() + "/public/upload/temp/" + file.filename,
-            process.cwd() + "/public/upload" + file_name
+            process.cwd() + "/public/upload/" + file_name
         );
         ret_files.push("/upload/" + file_name);
     }
